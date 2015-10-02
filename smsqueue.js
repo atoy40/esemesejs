@@ -14,11 +14,12 @@ var SMSQueue = function(mongourl, devices) {
   }.bind(this));
 
   // instanciate modems
-  devices.forEach(function(device) {
-    var params = device.split(/:/);
-    var modem = require('./drivers/'+params[0])(params[1]);
+  devices.forEach(function(device, index) {
+    if (!device.driver)
+      return console.log("Device need a driver");
+    var modem = require('./drivers/'+device.driver)(device.options || {});
     modem.on('idle', function() {
-      console.log("New available modem "+device);
+      console.log("Modem "+device.name+" available");
       this.freeModems.push(modem);
       this.processQueue();
     }.bind(this));

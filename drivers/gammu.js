@@ -2,8 +2,9 @@ var util = require('util');
 var EventEmitter = require('events');
 var child_process = require('child_process');
 
-var Gammu = function(section) {
-  this.section = section === undefined ? 0 : section;
+var Gammu = function(options) {
+  this.section = options.section === undefined ? 0 : options.section;
+  this.name = "gammu"+this.section;
 
   // check gammu command
   child_process.exec("gammu", function(error, stdout, stderr) {

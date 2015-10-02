@@ -1,8 +1,10 @@
 var util = require('util');
 var EventEmitter = require('events');
 
-var Fake = function(timeout) {
-  this.timeout = timeout || 2000;
+var Fake = function(options) {
+  this.timeout = options.timeout || 2000;
+  this.error = options.error === undefined ? false : options.error;
+  this.name = "fake/"+this.timeout+"ms/"+(this.error ? "error" : "succes");
 
   // simulate initial sate check
   setTimeout(function() {
@@ -15,7 +17,7 @@ util.inherits(Fake, EventEmitter);
 Fake.prototype.sendSMS = function(recipient, content, callback) {
   // simulate send delay
   setTimeout(function() {
-    callback();
+    callback(this.error ? "faked error !" : undefined);
     this.emit('idle');
   }.bind(this), this.timeout);
 };

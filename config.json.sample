@@ -8,6 +8,6 @@
     }
   ],
   "devices": [
-    "gammu:0"
+    { "driver": "gammu", "options": { "section": 0 } }
   ]
 }

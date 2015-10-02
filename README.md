@@ -17,6 +17,12 @@ The configuration file allows you to configure keys (authorizations) and modems.
       "ips": ["127.0.0.1", "::1"],
       "key": "d6zpumfnmlwksb7faxy7zsm16qzzoi91",
       "maxprio": 1
+    },
+    {
+      "name": "mynagiosserver",
+      "ips": ["10.10.10.10"],
+      "key": "sm16qzzoixy7z91mfnmlwksb7d6zpufa",
+      "maxprio": 0
     }
   ],
   "devices": [

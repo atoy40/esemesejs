@@ -7,7 +7,7 @@ you can start the web service using ```node server.js```. Environment variables 
 * PORT : The listening port (default 8888)
 * CONFIG : The location of the configuration file (default to /etc/esemesejs.conf)
 
-## configuration file
+## Configuration file
 The configuration file allows you to configure keys (authorizations) and modems.
 ```json
 {
@@ -26,8 +26,9 @@ The configuration file allows you to configure keys (authorizations) and modems.
     }
   ],
   "devices": [
-    "gammu:0"
-    "gammu:1"
+    { "driver": "gammu", "options": { "section": 0 } },
+    { "driver": "gammu", "options": { "section": 1 } },
+    { "driver": "at", "options": { "device": "/dev/ttyACM2" } }
   ]
 }
 ```
@@ -77,9 +78,9 @@ A sent message will return :
 After 3 failed attempts, the message state will be set to "failed", and a lasterror key will contain informations.
 
 ## Drivers
-the drivers folder contains modem driver code. To use a driver, add it to the devices array using the syntax "drivername:option".
-You can use :
-* gammu:sectionnumber : It use the gammu utility to send SMS, it can cover 99% of cases... the section number reflect the section configured in gammurc file for a particular modem. 
-* at:device : This driver use the serial device directly, for unsupported gammu devices. device is a /dev/tty matching your modem.
-* fake:timeout : a fake modem, timeout (milliseconds) is the time used to simulate the message transmission
-* fakeerr:timeout : a fake modem generating errors, timeout (milliseconds) is the time used to simulate the message transmission
+the drivers folder contains modem driver code. To use a driver, add an object to the device array containing 2 keys : driver and options (see example in the Configuration file section)
+
+Available drivers are :
+* gammu : It use the gammu utility to send SMS, it can cover 99% of cases... options can contains a section key reflecting the "-s" parameter of gammu command line.
+* at : This driver use the serial device directly. options must contains a device key pointing the the /dev/tty to use.
+* fake : A fake modem for test purposes. options can contains "timeout" (in millisecond) to simulate processing time and "error" (a boolean). If error is true, the modem will always simulate a fail.

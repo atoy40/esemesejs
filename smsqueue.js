@@ -19,7 +19,7 @@ var SMSQueue = function(mongourl, devices) {
       return console.log("Device need a driver");
     var modem = require('./drivers/'+device.driver)(device.options || {});
     modem.on('idle', function() {
-      console.log("Modem "+device.name+" available");
+      console.log("Modem "+modem.name+" available");
       this.freeModems.push(modem);
       this.processQueue();
     }.bind(this));

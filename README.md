@@ -27,7 +27,7 @@ The configuration file allows you to configure keys (authorizations) and modems.
 ```
 
 ## Client usage
-you can push a SMS ny sending a HTTP POST request to /sendsms path. For example using cURL :
+you can push a SMS by sending a HTTP POST request to /sendsms path. For example using cURL :
 ```bash
 curl -v \
   -H "Authorization: APIKEY d6zpumfnmlwksb7faxy7zsm16qzzoi91" \
@@ -36,7 +36,7 @@ curl -v \
   -d '{"priority": 2, "recipient": "0699999999", "content": "helloworld"}' \
   http://localhost:8888/sendsms
 ```
-The SMS is then added to a queue and the reponse (HTTP 200) will contains a JSON object with the id keyc which can be use to retrieve SMS status.
+The SMS is then added to a queue and the reponse (HTTP 200) will contains a JSON object with the id key which can be use to retrieve SMS status later.
 If an error occurs (bad parameters or key), a HTTP error code will be send with a JSON object containing the error key.
 Example :
 ```{"id":"560e5475d24c09ec2aa9c2df"}```
@@ -73,7 +73,7 @@ After 3 failed attempts, the message state will be set to "failed", and a laster
 ## Drivers
 the drivers folder contains modem driver code. To use a driver, add it to the devices array using the syntax "drivername:option".
 You can use :
-* gammu:sectionnumber : It use the gammu utility to send SMS, it can cover 99% of cases... the section number reflect the section configured in gammurc file. 
+* gammu:sectionnumber : It use the gammu utility to send SMS, it can cover 99% of cases... the section number reflect the section configured in gammurc file for a particular modem. 
 * at:device : This driver use the serial device directly, for unsupported gammu devices. device is a /dev/tty matching your modem.
-* fake:timeout : a fake modem, timeout (milliseconds) is the time needed to release the modem
-* fakeerr:timeout : a fake modem generating errors.
+* fake:timeout : a fake modem, timeout (milliseconds) is the time used to simulate the message transmission
+* fakeerr:timeout : a fake modem generating errors, timeout (milliseconds) is the time used to simulate the message transmission

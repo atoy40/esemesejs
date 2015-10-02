@@ -14,7 +14,7 @@ The configuration file allows you to configure keys (authorizations) and modems.
   "clients": [
     {
       "name": "localhost",
-      "ips": ["127.0.0.1", "10.1.2.97", "::1"],
+      "ips": ["127.0.0.1", "::1"],
       "key": "d6zpumfnmlwksb7faxy7zsm16qzzoi91",
       "maxprio": 1
     }

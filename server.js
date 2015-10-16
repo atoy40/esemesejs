@@ -62,6 +62,12 @@ router.get("/getstatus/:sms_id", function(req, res) {
   });
 });
 
+router.get("/report", function(req, res) {
+  q.getReport(req.clientconf.name, function(err, doc) {
+    res.json(doc);
+  });
+});
+
 app.use('/', router);
 
 /* Default params */

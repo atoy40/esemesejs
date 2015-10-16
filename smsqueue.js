@@ -99,4 +99,17 @@ SMSQueue.prototype.getEntryStatus = function(id, callback) {
   });
 };
 
+SMSQueue.prototype.getReport = function(client, callback) {
+  SMS.aggregate([
+    { $match: { client: client } },
+    { $group: { _id: "$state", "total": { $sum: 1 } } },
+  ], function(err, doc) {
+    var result = {};
+    doc.forEach(function(val) {
+      result[val._id] = val.total;
+    });
+    callback(err, result);
+  });
+}
+
 module.exports = SMSQueue;

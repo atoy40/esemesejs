@@ -22,7 +22,7 @@ Gammu.prototype.sendSMS = function(recipient, content, callback) {
 
     // disable the modem for 60sec if error
     if (error)
-      setTimeout(function() {
+      return setTimeout(function() {
         this.emit('idle');
       }, 60000);
 

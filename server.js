@@ -25,6 +25,10 @@ var checkApiKey = function(key, ip) {
 }
 
 app.use(function(req, res, next) {
+
+  if (!req.get('Authorization'))
+    return res.status(500).json({error: "No authorization token provided"});
+
   var match = req.get('Authorization').match("^APIKEY (.*)$");
   var client;
 

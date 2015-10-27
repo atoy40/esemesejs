@@ -48,11 +48,11 @@ If an error occurs (bad parameters or key), a HTTP error code will be send with 
 Example :
 ```{"id":"560e5475d24c09ec2aa9c2df"}```
 
-You can get the message status using a HTTP GET request to /getstatus/[id] :
+You can get the message status using a HTTP GET request to /status/[id] :
 ```bash
 curl -v \
   -H "Authorization: APIKEY d6zpumfnmlwksb7faxy7zsm16qzzoi91"
-  http://localhost:8888/getstatus/560e5475d24c09ec2aa9c2df
+  http://localhost:8888/status/560e5475d24c09ec2aa9c2df
 ```
 
 For example, a pending message will return the JSON object :

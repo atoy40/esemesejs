@@ -60,7 +60,7 @@ router.post("/sendsms", function(req, res) {
   });
 });
 
-router.get("/getstatus/:sms_id", function(req, res) {
+router.get("/status/:sms_id", function(req, res) {
   q.getEntryStatus(req.params.sms_id, function(err, doc) {
     res.json(doc);
   });

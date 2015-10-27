@@ -11,6 +11,8 @@ you can start the web service using ```node server.js```. Environment variables 
 * MONGOURL : the database URL (default to mongodb://localhost:27017/smsdb)
 * PORT : The listening port (default 8888)
 * CONFIG : The location of the configuration file (default to /etc/esemesejs.conf)
+* LOGLEVEL : the log level. See bunyan for allowed values. Default to
+  "info"
 
 ## Configuration file
 

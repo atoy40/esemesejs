@@ -3,23 +3,28 @@ var EventEmitter = require('events');
 var mongoose = require('mongoose');
 var SMS = require('./sms');
 
-var SMSQueue = function(mongourl, devices) {
+var SMSQueue = function(mongourl, devices, log) {
   this.freeModems = [];
-  
+  this.log = log;
+
   // connect mongo database
   mongoose.connect(mongourl, function(err) {
     if (err)
-      return console.log("Unable to connect to DB");
+      return this.log.error("Unable to connect to DB");
     this.emit("ready");
   }.bind(this));
 
   // instanciate modems
   devices.forEach(function(device, index) {
     if (!device.driver)
-      return console.log("Device need a driver");
-    var modem = require('./drivers/'+device.driver)(device.options || {});
+      return this.log.warn("Device need a driver");
+
+    var options = device.options || {};
+    options.log = this.log;
+    var modem = require('./drivers/'+device.driver)(options);
+
     modem.on('idle', function() {
-      console.log("Modem "+modem.name+" available");
+      this.log.info("Modem "+modem.name+" available");
       this.freeModems.push(modem);
       this.processQueue();
     }.bind(this));
@@ -66,15 +71,15 @@ SMSQueue.prototype.processQueue = function() {
 
   SMS.findOneAndUpdate({state: "pending"}, {'$set': { state: "processing" }}, { sort: {priority: 1, submitted: 1}, 'new': true }, function(err, doc) {
     if (err)
-      return console.log(err);
+      return this.log.error(err);
 
     if (!doc) {
-      console.log("Queue is empty");
+      this.log.debug("Queue is empty");
       this.freeModems.push(modem);
       return;
     }
 
-    console.log("Processing "+doc._id);
+    this.log.info("Processing "+doc._id);
     modem.sendSMS(doc.recipient, doc.content, function(err) {
       doc.attempts++;
       if (err && doc.attempts < 3) {

@@ -1,15 +1,22 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var bunyan = require('bunyan');
 var fs = require('fs');
 var SMSQueue = require('./smsqueue');
 
 var app = express();
+var log = bunyan.createLogger({name: "esemesejs", streams: [ { level: process.env.LOGLEVEL || 'info', stream: process.stdout } ] });
 var q;
 var config;
 
 /* Use body-parser middleware to extract JSON into HTTP body */
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+var sendError = function(res, code, error) {
+  log.error({ code: code }, error);
+  res.status(code).json({error: error});
+};
 
 /* Authentication middleware */
 var checkApiKey = function(key, ip) {
@@ -27,13 +34,13 @@ var checkApiKey = function(key, ip) {
 app.use(function(req, res, next) {
 
   if (!req.get('Authorization'))
-    return res.status(500).json({error: "No authorization token provided"});
+    return sendError(res, 500, "No authorization token provided");
 
   var match = req.get('Authorization').match("^APIKEY (.*)$");
   var client;
 
   if (!match || !(client = checkApiKey(match[1], req.ip)))
-    return res.status(500).json({error: "Bad authorization token"});
+    return sendError(res, 500, "Bad authorization token");
 
   client.hasOwnProperty("maxprio") || (client.maxprio = 1);
 
@@ -50,11 +57,11 @@ router.post("/sendsms", function(req, res) {
   data.client = req.clientconf.name || req.ip;
 
   if (data.priority < req.clientconf.maxprio)
-    return res.status(400).json({error: "Max priority allowed is "+req.clientconf.maxprio});
+    return sendError(res, 400, "Max priority allowed is "+req.clientconf.maxprio);
 
   q.enqueue(req.body, function(err, id) {
     if (err)
-      return res.status(400).json({error: err});
+      return sendError(res, 400, err);
 
     res.json({id: id});
   });
@@ -91,15 +98,15 @@ var configfile = process.env.CONFIG || "/etc/esemesejs.conf";
 
 fs.readFile(configfile, function(err, data) {
   if (err)
-    return console.log("Unable to read config file "+configfile);
+    return log.error("Unable to read config file "+configfile);
 
   config = JSON.parse(data);
 
   if (!config.devices)
-    console.log("no device defined");
+    log.warn("no device defined");
 
   if (!config.clients) {
-    console.log("no client defined, localhost added with apikey d6zpumfnmlwksb7faxy7zsm16qzzoi91");
+    log.info("no client defined, localhost added with apikey d6zpumfnmlwksb7faxy7zsm16qzzoi91");
     config.clients = {
       name: "localhost",
       ips: ['127.0.0.1', '::1'],
@@ -109,16 +116,16 @@ fs.readFile(configfile, function(err, data) {
   }
 
   /* Server start */
-  q = new SMSQueue(mongourl, config.devices);
+  q = new SMSQueue(mongourl, config.devices, log);
 
   q.on('ready', function() {
-    console.log("Connected to mongo database");
+    log.info("Connected to mongo database "+mongourl);
 
     app.listen(port, function(err) {
       if (err)
-        return console.log("unable to connect to DB");
+        return log.error({error: err}, "unable to connect to DB");
 
-      console.log("Listening on port "+port);
+      log.info("Listening on port "+port);
     });
   });
 });

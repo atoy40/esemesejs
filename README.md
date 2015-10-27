@@ -1,13 +1,19 @@
 # esemesejs
+
 esemesejs is a simple REST service to send SMS using multiple modems
 
-## Server Usage
+## Server installation and usage
+
+To install, clone this repository and cd into it. Then use ```npm install```
+command to install dependencies.
+
 you can start the web service using ```node server.js```. Environment variables can be use to setup :
 * MONGOURL : the database URL (default to mongodb://localhost:27017/smsdb)
 * PORT : The listening port (default 8888)
 * CONFIG : The location of the configuration file (default to /etc/esemesejs.conf)
 
 ## Configuration file
+
 The configuration file allows you to configure keys (authorizations) and modems.
 ```json
 {
@@ -34,6 +40,9 @@ The configuration file allows you to configure keys (authorizations) and modems.
 ```
 
 ## Client usage
+
+### Send a SMS
+
 you can push a SMS by sending a HTTP POST request to /sendsms path. For example using cURL :
 ```bash
 curl -v \
@@ -48,6 +57,7 @@ If an error occurs (bad parameters or key), a HTTP error code will be send with 
 Example :
 ```{"id":"560e5475d24c09ec2aa9c2df"}```
 
+### Message status
 You can get the message status using a HTTP GET request to /status/[id] :
 ```bash
 curl -v \
@@ -77,6 +87,28 @@ A sent message will return :
 
 After 3 failed attempts, the message state will be set to "failed", and a lasterror key will contain informations.
 
+### Get reporting
+
+You can get per-client reporting using the /report path. This path can
+take two query string parameters : "from" and "to". It must be two
+string formated date. For example :
+```bash
+curl -v \
+  -H "Authorization: APIKEY d6zpumfnmlwksb7faxy7zsm16qzzoi91" \
+  "http://smsgw:8888/report?from=2015-10-16&to=2015-10-17"
+```
+
+can returns :
+```json
+{
+ "sent":143,
+ "failed":3,
+ "pending":2
+}
+```
+
+Without from and to parameters, report will use last 24h.
+
 ## Drivers
 the drivers folder contains modem driver code. To use a driver, add an object to the device array containing 2 keys : driver and options (see example in the Configuration file section)
 
@@ -84,3 +116,10 @@ Available drivers are :
 * gammu : It use the gammu utility to send SMS, it can cover 99% of cases... options can contains a section key reflecting the "-s" parameter of gammu command line.
 * at : This driver use the serial device directly. options must contains a device key pointing the the /dev/tty to use.
 * fake : A fake modem for test purposes. options can contains "timeout" (in millisecond) to simulate processing time and "error" (a boolean). If error is true, the modem will always simulate a fail.
+
+## Write a driver
+
+A driver is a nodejs package where module.exports must be a function
+taking driver parameters object and returning a new instance.
+The driver MUST emit "idle" each time it becomes ready to process a message.
+

@@ -2,7 +2,7 @@
   "clients": [
     {
       "name": "localhost",
-      "ips": ["127.0.0.1", "10.1.2.97", "::1"],
+      "ips": ["::ffff:127.0.0.1", "::ffff:10.1.2.97", "::1"],
       "key": "d6zpumfnmlwksb7faxy7zsm16qzzoi91",
       "maxprio": 1
     }

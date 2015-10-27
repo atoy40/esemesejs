@@ -56,10 +56,14 @@ The SMS is then added to a queue and the reponse (HTTP 200) will contains a JSON
 If an error occurs (bad parameters or key), a HTTP error code will be send with a JSON object containing the error key.
 
 Examples :
-
 ```{"id":"560e5475d24c09ec2aa9c2df"}```
-
 ```{"error":"Bad authorization token"}```
+
+Request keys are :
+* recipient : the phone number.
+* content : the content (max to 160 ascii characters).
+* priority : 0 (max) to 3. Default to 2. Max priority allowed is defined
+  per-client (maxprio parameter).
 
 ### Message status
 You can get the message status using a HTTP GET request to /status/[id] :

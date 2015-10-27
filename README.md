@@ -103,7 +103,7 @@ string formated date. For example :
 ```bash
 curl -v \
   -H "Authorization: APIKEY d6zpumfnmlwksb7faxy7zsm16qzzoi91" \
-  "http://smsgw:8888/report?from=2015-10-16&to=2015-10-17"
+  "http://localhost:8888/report?from=2015-10-16&to=2015-10-17"
 ```
 
 can returns :

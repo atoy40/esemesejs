@@ -99,9 +99,9 @@ SMSQueue.prototype.getEntryStatus = function(id, callback) {
   });
 };
 
-SMSQueue.prototype.getReport = function(client, callback) {
+SMSQueue.prototype.getReport = function(client, from, to, callback) {
   SMS.aggregate([
-    { $match: { client: client } },
+    { $match: { $and: [ { client: client }, { submitted: { $gte: from } }, { submitted: { $lte: to } } ] },
     { $group: { _id: "$state", "total": { $sum: 1 } } },
   ], function(err, doc) {
     var result = {};

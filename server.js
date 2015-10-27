@@ -67,7 +67,17 @@ router.get("/status/:sms_id", function(req, res) {
 });
 
 router.get("/report", function(req, res) {
-  q.getReport(req.clientconf.name, function(err, doc) {
+  var from, to;
+  if (req.query.from && req.query.to) {
+    from = new Date(req.query.from);
+    to = new Date(req.query.to);
+  } else {
+    // default to last 24h
+    to = new Date();
+    from = new Date(to-(24*3600*1000));
+  }
+
+  q.getReport(req.clientconf.name, from, to, function(err, doc) {
     res.json(doc);
   });
 });

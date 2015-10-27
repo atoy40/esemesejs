@@ -54,8 +54,12 @@ curl -v \
 ```
 The SMS is then added to a queue and the reponse (HTTP 200) will contains a JSON object with the id key which can be use to retrieve SMS status later.
 If an error occurs (bad parameters or key), a HTTP error code will be send with a JSON object containing the error key.
-Example :
+
+Examples :
+
 ```{"id":"560e5475d24c09ec2aa9c2df"}```
+
+```{"error":"Bad authorization token"}```
 
 ### Message status
 You can get the message status using a HTTP GET request to /status/[id] :

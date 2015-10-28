@@ -44,6 +44,7 @@ util.inherits(SMSQueue, EventEmitter);
  * Enqueue a new message to database
  */
 SMSQueue.prototype.enqueue = function(data, callback) {
+  this.log.trace({ data: data }, "Enqueue message");
   var sms = new SMS(data);
   sms.submitted = new Date();
   sms.state = "pending";
@@ -62,6 +63,7 @@ SMSQueue.prototype.enqueue = function(data, callback) {
  * Process the next message
  */
 SMSQueue.prototype.processQueue = function() {
+  this.log.debug("Process queue");
   this.lastprocess = new Date();
   var modem = this.freeModems.pop();
 
@@ -79,7 +81,7 @@ SMSQueue.prototype.processQueue = function() {
       return;
     }
 
-    this.log.info("Processing "+doc._id);
+    this.log.info("Processing message "+doc._id);
     modem.sendSMS(doc.recipient, doc.content, function(err) {
       doc.attempts++;
       if (err && doc.attempts < 3) {

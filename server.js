@@ -5,7 +5,7 @@ var fs = require('fs');
 var SMSQueue = require('./smsqueue');
 
 var app = express();
-var log = bunyan.createLogger({name: "esemesejs", streams: [ { level: process.env.LOGLEVEL || 'info', stream: process.stdout } ] });
+var log = bunyan.createLogger({name: "esemesejs", streams: [ { level: process.env.LOGLEVEL || 'info', stream: process.stdout } ], serializers: bunyan.stdSerializers });
 var q;
 var config;
 
@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 
 /* Add a bunyan child logger per request */
 app.use(function(req, res, next) {
+  log.trace({req: req});
   res.log = req.log = log.child({ip: req.ip});
   res.sendError = function(code, message) {
     res.log.error({ code: code }, message);

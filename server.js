@@ -13,10 +13,15 @@ var config;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var sendError = function(res, code, error) {
-  log.error({ code: code }, error);
-  res.status(code).json({error: error});
-};
+/* Add a bunyan child logger per request */
+app.use(function(req, res, next) {
+  res.log = req.log = log.child({ip: req.ip});
+  res.sendError = function(code, message) {
+    res.log.error({ code: code }, message);
+    res.status(code).json({error: message});
+  };
+  next();
+});
 
 /* Authentication middleware */
 var checkApiKey = function(key, ip) {
@@ -34,13 +39,13 @@ var checkApiKey = function(key, ip) {
 app.use(function(req, res, next) {
 
   if (!req.get('Authorization'))
-    return sendError(res, 500, "No authorization token provided");
+    return res.sendError(401, "No authorization token provided");
 
   var match = req.get('Authorization').match("^APIKEY (.*)$");
   var client;
 
   if (!match || !(client = checkApiKey(match[1], req.ip)))
-    return sendError(res, 500, "Bad authorization token");
+    return res.sendError(401, "Bad authorization token");
 
   client.hasOwnProperty("maxprio") || (client.maxprio = 1);
 
@@ -57,11 +62,11 @@ router.post("/sendsms", function(req, res) {
   data.client = req.clientconf.name || req.ip;
 
   if (data.priority < req.clientconf.maxprio)
-    return sendError(res, 400, "Max priority allowed is "+req.clientconf.maxprio);
+    return res.sendError(400, "Max priority allowed is "+req.clientconf.maxprio);
 
   q.enqueue(req.body, function(err, id) {
     if (err)
-      return sendError(res, 400, err);
+      return res.sendError(400, err);
 
     res.json({id: id});
   });

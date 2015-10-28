@@ -14,6 +14,21 @@ you can start the web service using ```node server.js```. Environment variables 
 * LOGLEVEL : the log level. See bunyan for allowed values. Default to
   "info"
 
+### Logging
+
+This application use bunyan to log directly on stdout. You can pipe
+stdout to the bunyan script to get a readable output.
+
+Log example piped to bunyan :
+
+```
+[2015-10-28T14:28:41.697Z]  INFO: esemesejs/19304 on ah: Connected to mongo database mongodb://localhost:27017/smsdb
+[2015-10-28T14:28:41.702Z]  INFO: esemesejs/19304 on ah: Listening on port 8888
+[2015-10-28T14:28:41.777Z]  INFO: esemesejs/19304 on ah: Modem fake/2000ms/succes available
+[2015-10-28T14:28:41.798Z] DEBUG: esemesejs/19304 on ah: Queue is empty
+[2015-10-28T14:28:44.781Z] ERROR: esemesejs/19304 on ah: Bad authorization token (ip=::1, code=401)
+```
+
 ## Configuration file
 
 The configuration file allows you to configure keys (authorizations) and modems.
